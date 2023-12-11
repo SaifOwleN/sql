@@ -45,6 +45,25 @@ app.get("/api/blogs", async (req, res) => {
   res.json(blogs);
 });
 
+app.get("/api/blogs/:id", async (req, res) => {
+  const blog = await Blog.findByPk(req.params.id);
+  if (blog) {
+    res.json(blog);
+  } else {
+    res.status(404);
+  }
+});
+
+app.post("/api/blogs", async (req, res) => {
+  const blog = await Blog.create(req.body);
+  res.json(blog);
+});
+
+app.delete("/api/blogs/:id", async (req, res) => {
+  await Blog.destroy({ where: { id: req.params.id } });
+  res.status(200).end();
+});
+
 const PORT = process.env.PORT;
 
 app.listen(PORT, () => {
