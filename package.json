@@ -1,31 +1,37 @@
 {
-  "name": "sqlex",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.ts",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "ts-node-dev index.ts"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/SeifOwleN/sql.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/SeifOwleN/sql/issues"
-  },
-  "homepage": "https://github.com/SeifOwleN/sql#readme",
-  "dependencies": {
-    "@types/cors": "^2.8.17",
-    "@types/express": "^4.17.21",
-    "@types/sequelize": "^4.28.19",
-    "cors": "^2.8.5",
-    "dotenv": "^16.3.1",
-    "express": "^4.18.2",
-    "pg": "^8.11.3",
-    "sequelize": "^6.35.1",
-    "ts-node-dev": "^2.0.0"
-  }
+	"name": "sqlex",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.ts",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"dev": "ts-node-dev --env-file=.env index.ts"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/SeifOwleN/sql.git"
+	},
+	"author": "",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/SeifOwleN/sql/issues"
+	},
+	"homepage": "https://github.com/SeifOwleN/sql#readme",
+	"dependencies": {
+		"@types/bcrypt": "^5.0.2",
+		"@types/cors": "^2.8.17",
+		"@types/express": "^4.17.21",
+		"@types/jsonwebtoken": "^9.0.5",
+		"@types/sequelize": "^4.28.19",
+		"bcrypt": "^5.1.1",
+		"cors": "^2.8.5",
+		"dotenv": "^16.3.1",
+		"express": "^4.18.2",
+		"express-async-errors": "^3.1.1",
+		"json-web-token": "^3.2.0",
+		"jsonwebtoken": "^9.0.2",
+		"pg": "^8.11.3",
+		"sequelize": "^6.35.1",
+		"ts-node-dev": "^2.0.0"
+	}
 }
