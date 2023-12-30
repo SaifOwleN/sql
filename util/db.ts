@@ -1,7 +1,7 @@
 import { Sequelize } from "sequelize";
 import { DB_URI } from "./config";
 
-const sequelize = new Sequelize(DB_URI as string);
+const sequelize = new Sequelize(DB_URI as string, { logging: false });
 
 const connectToDatabase = async () => {
 	try {

@@ -2,11 +2,7 @@ import { NextFunction, Request, RequestHandler, Response } from "express";
 import jwt from "jsonwebtoken";
 import { User } from "../models";
 import { SECRET } from "./config";
-
-export interface authRequest extends Request {
-	token?: string;
-	user?: string;
-}
+import { authRequest } from "./types";
 
 const tokenExtractor: RequestHandler = (
 	req: authRequest,

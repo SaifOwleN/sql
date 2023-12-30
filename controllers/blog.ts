@@ -1,19 +1,32 @@
 import express from "express";
+import { Op } from "sequelize";
+import sequelize from "sequelize";
 import { Blog, User } from "../models";
-import { authRequest } from "../util/middleware";
+import { authRequest } from "../util/types";
+import { BlogType } from "../util/types";
 
 const router = express.Router();
 
 router.get("/", async (req, res) => {
+	const title = {
+		[Op.substring]: req.query.search ? req.query.search : "",
+	};
+
+	const author = title;
+
 	const blog = await Blog.findAll({
 		attributes: { exclude: ["userId"] },
 		include: { model: User, attributes: { exclude: ["passwordHash"] } },
+		where: { title },
+		order: [["likes", "DESC"]],
 	});
 	res.json(blog);
 });
 
 router.get("/:id", async (req, res) => {
 	const blog = await Blog.findByPk(req.params.id);
+	console.log(blog?.getDataValue("id"));
+
 	if (blog) {
 		res.json(blog);
 	} else {
@@ -24,8 +37,7 @@ router.get("/:id", async (req, res) => {
 router.post("/", async (req: authRequest, res) => {
 	try {
 		const { user } = req;
-		//@ts-ignore
-		const blogToBeAdded = { ...req.body, userId: user.id };
+		const blogToBeAdded = { ...req.body, userId: user?.id };
 		const blog = await Blog.create(blogToBeAdded);
 		res.json(blog);
 	} catch (err) {
@@ -36,11 +48,11 @@ router.post("/", async (req: authRequest, res) => {
 router.delete("/:id", async (req: authRequest, res) => {
 	const { user } = req;
 	const blog = await Blog.findByPk(req.params.id);
+
 	if (!blog) {
 		res.status(404).json("there is no blog with this id").end();
 	} else {
-		//@ts-ignore
-		if (user?.id === blog?.userId) {
+		if (user?.id === blog?.getDataValue("id")) {
 			await Blog.destroy({ where: { id: req.params.id } });
 			res.status(200).end();
 		} else {
@@ -52,8 +64,7 @@ router.delete("/:id", async (req: authRequest, res) => {
 router.put("/:id", async (req, res) => {
 	const blog = await Blog.findByPk(req.params.id);
 	if (blog) {
-		//@ts-ignore
-		blog.likes = req.body.likes;
+		blog.setDataValue("likes", req.body.likes);
 		await blog.save();
 		res.json(blog);
 	} else {

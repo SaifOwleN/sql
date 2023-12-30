@@ -1,5 +1,6 @@
 import cors from "cors";
 import express from "express";
+import authorRouter from "./controllers/author";
 import blogRouter from "./controllers/blog";
 import loginRouter from "./controllers/login";
 import userRouter from "./controllers/user";
@@ -15,6 +16,7 @@ app.use("/api/users", userRouter);
 app.use("/api/login", loginRouter);
 app.use(userExtractor);
 app.use("/api/blogs", blogRouter);
+app.use("/api/author", authorRouter);
 
 app.listen(PORT, () => {
 	console.log(PORT);
