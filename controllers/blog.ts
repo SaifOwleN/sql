@@ -1,10 +1,14 @@
 import express from "express";
-import { Blog } from "../models";
+import { Blog, User } from "../models";
+import { authRequest } from "../util/middleware";
 
 const router = express.Router();
 
 router.get("/", async (req, res) => {
-	const blog = await Blog.findAll();
+	const blog = await Blog.findAll({
+		attributes: { exclude: ["userId"] },
+		include: { model: User, attributes: { exclude: ["passwordHash"] } },
+	});
 	res.json(blog);
 });
 
@@ -17,9 +21,12 @@ router.get("/:id", async (req, res) => {
 	}
 });
 
-router.post("/", async (req, res) => {
+router.post("/", async (req: authRequest, res) => {
 	try {
-		const blog = await Blog.create(req.body);
+		const { user } = req;
+		//@ts-ignore
+		const blogToBeAdded = { ...req.body, userId: user.id };
+		const blog = await Blog.create(blogToBeAdded);
 		res.json(blog);
 	} catch (err) {
 		res.json(err);
@@ -27,8 +34,14 @@ router.post("/", async (req, res) => {
 });
 
 router.delete("/:id", async (req, res) => {
-	await Blog.destroy({ where: { id: req.params.id } });
-	res.status(200).end();
+	const { user } = req;
+	const blog = await Blog.findByPk(req.params.id);
+	if (user.id === blog.id) {
+		await Blog.destroy({ where: { id: req.params.id } });
+		res.status(200).end();
+	} else {
+		res.status(401).json({ error: "cant delete a blog u didnt post" });
+	}
 });
 
 router.put("/:id", async (req, res) => {
