@@ -13,12 +13,14 @@ loginRouter.post("/", async (req, res) => {
 		res.status(404).json("username doesnt exist");
 	}
 	const user = userExists?.toJSON();
+	console.log(user);
+
 	const checkPassword = await bcrypt.compare(password, user.passwordHash);
 	if (!checkPassword) {
 		res.status(400).json("password isnt correct");
 	}
 
-	const token = await jwt.sign({ username, id: user?.dataValues.id }, SECRET);
+	const token = await jwt.sign({ username, id: user.id }, SECRET);
 	res.json({ username, token });
 });
 

@@ -33,14 +33,19 @@ router.post("/", async (req: authRequest, res) => {
 	}
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", async (req: authRequest, res) => {
 	const { user } = req;
 	const blog = await Blog.findByPk(req.params.id);
-	if (user.id === blog.id) {
-		await Blog.destroy({ where: { id: req.params.id } });
-		res.status(200).end();
+	if (!blog) {
+		res.status(404).json("there is no blog with this id").end();
 	} else {
-		res.status(401).json({ error: "cant delete a blog u didnt post" });
+		//@ts-ignore
+		if (user?.id === blog?.userId) {
+			await Blog.destroy({ where: { id: req.params.id } });
+			res.status(200).end();
+		} else {
+			res.status(401).json({ error: "cant delete a blog u didnt post" });
+		}
 	}
 });
 
