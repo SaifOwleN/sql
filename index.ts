@@ -5,6 +5,7 @@ import blogRouter from "./controllers/blog";
 import loginRouter from "./controllers/login";
 import userRouter from "./controllers/user";
 import { PORT } from "./util/config";
+import { connectToDatabase } from "./util/db";
 import { tokenExtractor, userExtractor } from "./util/middleware";
 require("express-async-errors");
 
@@ -18,6 +19,7 @@ app.use(userExtractor);
 app.use("/api/blogs", blogRouter);
 app.use("/api/author", authorRouter);
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
+	await connectToDatabase();
 	console.log(PORT);
 });

@@ -38,6 +38,7 @@ router.post("/", async (req: authRequest, res) => {
 	try {
 		const { user } = req;
 		const blogToBeAdded = { ...req.body, userId: user?.id };
+		console.log(blogToBeAdded);
 		const blog = await Blog.create(blogToBeAdded);
 		res.json(blog);
 	} catch (err) {

@@ -44,7 +44,7 @@ userRouter.post("/", async (req, res) => {
 userRouter.put("/:username", async (req, res) => {
 	const { username } = req.params;
 	const user = await User.findOne({ where: { username } });
-	if (user) {
+	if (user && req.user.admin) {
 		//@ts-ignore
 		user.username = req.body.username;
 		const newUser = await user.save();

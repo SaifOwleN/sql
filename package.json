@@ -23,6 +23,7 @@
 		"@types/express": "^4.17.21",
 		"@types/jsonwebtoken": "^9.0.5",
 		"@types/sequelize": "^4.28.19",
+		"@types/umzug": "^2.3.7",
 		"bcrypt": "^5.1.1",
 		"cors": "^2.8.5",
 		"dotenv": "^16.3.1",
@@ -33,6 +34,7 @@
 		"pg": "^8.11.3",
 		"sequelize": "^6.35.1",
 		"sequelize-typescript": "^2.1.6",
-		"ts-node-dev": "^2.0.0"
+		"ts-node-dev": "^2.0.0",
+		"umzug": "^3.5.0"
 	}
 }
