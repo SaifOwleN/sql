@@ -1,14 +1,19 @@
 import bcrypt from "bcrypt";
 import express from "express";
 import jwt from "jsonwebtoken";
-import { Blog, User } from "../models";
+import { Blog, Team, User } from "../models";
 import { SECRET } from "../util/config";
+import { userExtractor } from "../util/middleware";
+import { authRequest } from "../util/types";
 
 const userRouter = express.Router();
 
 userRouter.get("/", async (req, res) => {
 	const users = await User.findAll({
-		include: { model: Blog, attributes: { exclude: ["userId"] } },
+		include: [
+			{ model: Blog, attributes: { exclude: ["userId"] } },
+			{ model: Team, attributes: ["name", "id"], through: { attributes: [] } },
+		],
 		attributes: { exclude: ["passwordHash"] },
 	});
 	res.json(users);
@@ -17,13 +22,24 @@ userRouter.get("/", async (req, res) => {
 userRouter.get("/:id", async (req, res) => {
 	const user = await User.findByPk(req.params.id, {
 		attributes: { exclude: ["passwordHash"] },
+		include: [
+			{ model: Blog, attributes: { exclude: ["userId"] } },
+			{ model: Blog, as: "marked_blogs" },
+			{ model: Team, attributes: ["name"] },
+		],
+	});
+	//@ts-ignore
+	const team = user.getTeams({
+		attributes: ["name"],
+		joinTableAttributes: [],
 	});
 	if (user) {
-		res.json(user);
+		res.json({ ...user.toJSON(), team });
 	} else {
 		res.status(404).end();
 	}
 });
+
 userRouter.post("/", async (req, res) => {
 	try {
 		const { name, username, password } = req.body;
@@ -41,12 +57,12 @@ userRouter.post("/", async (req, res) => {
 	}
 });
 
-userRouter.put("/:username", async (req, res) => {
+userRouter.put("/:username", userExtractor, async (req: authRequest, res) => {
 	const { username } = req.params;
+
 	const user = await User.findOne({ where: { username } });
-	if (user && req.user.admin) {
-		//@ts-ignore
-		user.username = req.body.username;
+	if (user && req.user?.admin) {
+		user.setDataValue("disabled", req.body.disabled);
 		const newUser = await user.save();
 		res.json(newUser);
 	} else {

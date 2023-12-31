@@ -5,7 +5,8 @@
 	"main": "index.ts",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"dev": "ts-node-dev --env-file=.env index.ts"
+		"dev": "ts-node-dev --env-file=.env index.ts",
+		"migration:down": "ts-node-dev util/rollback.ts"
 	},
 	"repository": {
 		"type": "git",

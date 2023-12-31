@@ -37,6 +37,16 @@ router.get("/:id", async (req, res) => {
 router.post("/", async (req: authRequest, res) => {
 	try {
 		const { user } = req;
+
+		const date = new Date();
+		const year = date.getFullYear();
+
+		if (req.body.year > year) {
+			return res
+				.status(406)
+				.json({ error: "year cannot be over current year" });
+		}
+
 		const blogToBeAdded = { ...req.body, userId: user?.id };
 		console.log(blogToBeAdded);
 		const blog = await Blog.create(blogToBeAdded);

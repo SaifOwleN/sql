@@ -3,6 +3,7 @@ import express from "express";
 import authorRouter from "./controllers/author";
 import blogRouter from "./controllers/blog";
 import loginRouter from "./controllers/login";
+import teamRouter from "./controllers/team";
 import userRouter from "./controllers/user";
 import { PORT } from "./util/config";
 import { connectToDatabase } from "./util/db";
@@ -18,6 +19,7 @@ app.use("/api/login", loginRouter);
 app.use(userExtractor);
 app.use("/api/blogs", blogRouter);
 app.use("/api/author", authorRouter);
+app.use("/api/teams", teamRouter);
 
 app.listen(PORT, async () => {
 	await connectToDatabase();

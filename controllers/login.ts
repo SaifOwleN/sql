@@ -15,7 +15,7 @@ loginRouter.post("/", async (req, res) => {
 	const user = userExists?.toJSON();
 	console.log(user);
 
-	if (!user.disabled) {
+	if (user.disabled) {
 		return res.status(401).json({ error: "account disabled" });
 	}
 

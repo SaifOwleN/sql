@@ -24,10 +24,13 @@ Blog.init(
 		likes: {
 			type: DataTypes.INTEGER,
 		},
+		year: {
+			type: DataTypes.INTEGER,
+		},
 	},
 	{
 		sequelize,
-		timestamps: false,
+		timestamps: true,
 		modelName: "blog",
 	},
 );

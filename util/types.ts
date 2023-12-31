@@ -4,6 +4,7 @@ interface UserType {
 	id: number;
 	username: string;
 	name: string;
+	admin: boolean;
 }
 
 export interface authRequest extends Request {
