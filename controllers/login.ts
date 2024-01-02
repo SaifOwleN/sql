@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import express from "express";
 import jwt from "jsonwebtoken";
-import { User } from "../models";
+import { Session, User } from "../models";
 import { SECRET } from "../util/config";
 
 const loginRouter = express.Router();
@@ -25,7 +25,10 @@ loginRouter.post("/", async (req, res) => {
 	}
 
 	const token = await jwt.sign({ username, id: user.id }, SECRET);
-	res.json({ username, token });
+
+	const createdToken = await Session.create({ token });
+
+	res.json({ username, token: createdToken.toJSON() });
 });
 
 export default loginRouter;

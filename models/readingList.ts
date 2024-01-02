@@ -1,8 +1,9 @@
 import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../util/db";
-class Membership extends Model {}
 
-Membership.init(
+class ReadingList extends Model {}
+
+ReadingList.init(
 	{
 		id: {
 			type: DataTypes.INTEGER,
@@ -14,18 +15,22 @@ Membership.init(
 			allowNull: false,
 			references: { model: "users", key: "id" },
 		},
-		teamId: {
+		blogId: {
 			type: DataTypes.INTEGER,
 			allowNull: false,
-			references: { model: "teams", key: "id" },
+			references: { model: "blogs", key: "id" },
+		},
+		read: {
+			type: DataTypes.BOOLEAN,
+			defaultValue: false,
 		},
 	},
 	{
 		sequelize,
-		timestamps: false,
 		underscored: true,
-		modelName: "membership",
+		timestamps: false,
+		modelName: "readingList",
 	},
 );
 
-export default Membership;
+export default ReadingList;

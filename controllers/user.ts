@@ -1,7 +1,8 @@
 import bcrypt from "bcrypt";
 import express from "express";
 import jwt from "jsonwebtoken";
-import { Blog, Team, User } from "../models";
+import { Op } from "sequelize";
+import { Blog, ReadingList, User } from "../models";
 import { SECRET } from "../util/config";
 import { userExtractor } from "../util/middleware";
 import { authRequest } from "../util/types";
@@ -10,34 +11,37 @@ const userRouter = express.Router();
 
 userRouter.get("/", async (req, res) => {
 	const users = await User.findAll({
-		include: [
-			{ model: Blog, attributes: { exclude: ["userId"] } },
-			{ model: Team, attributes: ["name", "id"], through: { attributes: [] } },
-		],
+		include: [{ model: Blog, attributes: { exclude: ["userId"] } }],
 		attributes: { exclude: ["passwordHash"] },
 	});
 	res.json(users);
 });
 
 userRouter.get("/:id", async (req, res) => {
+	const read = {
+		[Op.in]:
+			typeof req.query.search === "boolean"
+				? [req.query.search]
+				: [true, false],
+	};
+
 	const user = await User.findByPk(req.params.id, {
 		attributes: { exclude: ["passwordHash"] },
 		include: [
-			{ model: Blog, attributes: { exclude: ["userId"] } },
-			{ model: Blog, as: "marked_blogs" },
-			{ model: Team, attributes: ["name"] },
+			{
+				model: Blog,
+				as: "read_blogs",
+				attributes: { exclude: ["userId"] },
+				through: { attributes: ["id", "read"], where: { read } },
+			},
 		],
 	});
-	//@ts-ignore
-	const team = user.getTeams({
-		attributes: ["name"],
-		joinTableAttributes: [],
-	});
-	if (user) {
-		res.json({ ...user.toJSON(), team });
-	} else {
-		res.status(404).end();
+
+	if (!user) {
+		return res.status(404).end();
 	}
+
+	res.json(user);
 });
 
 userRouter.post("/", async (req, res) => {
@@ -59,15 +63,19 @@ userRouter.post("/", async (req, res) => {
 
 userRouter.put("/:username", userExtractor, async (req: authRequest, res) => {
 	const { username } = req.params;
-
 	const user = await User.findOne({ where: { username } });
-	if (user && req.user?.admin) {
-		user.setDataValue("disabled", req.body.disabled);
-		const newUser = await user.save();
-		res.json(newUser);
-	} else {
-		res.status(404).end();
+
+	if (!user) {
+		return res.status(404).end();
 	}
+
+	if (!req.user?.admin) {
+		return res.status(404).end();
+	}
+
+	user.setDataValue("disabled", req.body.disabled);
+	const newUser = await user.save();
+	res.json(newUser);
 });
 
 export default userRouter;

@@ -1,6 +1,6 @@
 import { NextFunction, Request, RequestHandler, Response } from "express";
 import jwt from "jsonwebtoken";
-import { User } from "../models";
+import { Session, User } from "../models";
 import { SECRET } from "./config";
 import { authRequest } from "./types";
 
@@ -23,7 +23,7 @@ const userExtractor: RequestHandler = async (
 ) => {
 	const token = req.token;
 	if (!token) {
-		res.status(401).json({ error: "token not available" });
+		return res.status(401).json({ error: "token not available" });
 	}
 
 	const validToken = (await jwt.verify(token as string, SECRET)) as {
@@ -35,13 +35,19 @@ const userExtractor: RequestHandler = async (
 	console.log(user);
 
 	if (!user) {
-		res.status(401).json({ error: "invalid token" });
-	} else {
-		req.user = user.toJSON();
-		console.log(req.user);
-
-		next();
+		return res.status(401).json({ error: "invalid token" });
 	}
+
+	const session = await Session.findOne({ where: { token } });
+
+	if (!session?.getDataValue("active")) {
+		return res.status(401).json({ error: "token revoked" });
+	}
+
+	req.user = user.toJSON();
+	console.log(req.user);
+
+	next();
 };
 
 export { tokenExtractor, userExtractor };

@@ -1,26 +1,31 @@
 import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../util/db";
-class Team extends Model {}
 
-Team.init(
+class Session extends Model {}
+
+Session.init(
 	{
 		id: {
 			type: DataTypes.INTEGER,
 			primaryKey: true,
 			autoIncrement: true,
 		},
-		name: {
+		token: {
 			type: DataTypes.TEXT,
 			allowNull: false,
-			unique: true,
+		},
+		active: {
+			type: DataTypes.BOOLEAN,
+			defaultValue: true,
 		},
 	},
 	{
 		sequelize,
-		timestamps: false,
+
 		underscored: true,
-		modelName: "team",
+		timestamps: false,
+		modelName: "session",
 	},
 );
 
-export default Team;
+export default Session;
